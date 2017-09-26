@@ -12,10 +12,14 @@ class TicTacToe
 
   def act(player)
     # Stores the steps of each act as a main method.
-    puts "What is the coordinate of your next act?"
+    puts "What is the coordinate of your next move?"
     @coordinate = gets.chomp.downcase
+
     valid_coordinate(@coordinate)
+
+    @player = player
     # visualise
+    visualise(@player)
     #is_a_winner?
   end
 
@@ -31,10 +35,13 @@ class TicTacToe
   end
 
   def memory_of_each_player(player)
+    @memory_of_x = []
+    @memory_of_y = []
+    player = X ? @memory_of_x << @coordinate : @memory_of_y << @coordinate
     #stores each players coordinate as an array of symbols
   end
 
-  def visualise
+  def visualise(player)
     # prints the visualised coordinates after each act.
     0th_line = " abc"
     1st_line = "1---"
@@ -43,12 +50,13 @@ class TicTacToe
 
     which_line = 0
     [1st_line, 2nd_line, 3rd_line].each do |line|
-      if line[0].include? @coordinate[1]
+      if line[0].include? @coordinate.to_s[1]
         which_line = line
       end
     end
-    index = 0th_line.index(@coordinate[0])
-    which_line[index] = player.to_s.downcase
+    index = 0th_line.index(@coordinate.to_s[0])
+
+    player = X ? which_line[index] = x : which_line[index] = y
 
     puts 0th_line, 1st_line, 2nd_line, 3rd_line
   end
