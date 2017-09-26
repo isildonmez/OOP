@@ -25,10 +25,10 @@ class TicTacToe
     memory_of_each_player(@player)
 
     # Visualising
-    visualise(@player)
+    puts visualise(@player)
 
     #Checking if there is a winner
-    a_winner(@player)
+    puts a_winner? if a_winner?
   end
 
   def valid_coordinate?(coordinate)
@@ -42,24 +42,23 @@ class TicTacToe
 
     # Checks if the coordinate is not occupied.
     free_space = lambda do |coordinate|
-      if (@memory_of_x + @memory_of_y).include? coordinate
+      if (@memory_of_x + @memory_of_o).include? coordinate
         puts "This coordinate is occupied. Please enter another coordinate."
         return false
       end
     end
-    # I am not sure about this until!
+
     until free_space.call(coordinate) && valid_digits.call(coordinate)
       coordinate = gets.chomp.downcase.to_sym
     end
-    puts "Came this far"
     @coordinate = coordinate.to_sym
   end
 
   def memory_of_each_player(player)
     #stores each players coordinate as an array of symbols
-    @memory_of_x = [:a3, :b2]
-    @memory_of_y = [:c1]
-    player = X ? @memory_of_x << @coordinate : @memory_of_y << @coordinate
+    @memory_of_x = []
+    @memory_of_o = []
+    player = X ? @memory_of_x << @coordinate : @memory_of_o << @coordinate
   end
 
   def visualise(player)
@@ -77,18 +76,26 @@ class TicTacToe
     end
     index = 0th_line.index(@coordinate.to_s[0])
 
-    player = X ? which_line[index] = x : which_line[index] = y
+    player = X ? which_line[index] = "x" : which_line[index] = "o"
 
-    puts 0th_line, 1st_line, 2nd_line, 3rd_line
+    [0th_line, 1st_line, 2nd_line, 3rd_line]
   end
 
-  def a_winner?(player)
+  def a_winner?
     # Checks memory_of_each_player if it includes any of the below combinations.
     @@winners_array = [
       %i[a3 a2 a1], %i[b3 b2 b1], %i[c3 c2 c1],
       %i[a3 b3 c3], %i[a2 b2 c2], %i[a1 b1 c1],
       %i[a3 b2 c1], %i[a1 b2 c3]
     ]
+    if (@memory_of_x || @memory_of_o).length > 2
+      @@winners_array.each do |arr|
+        if @memory_of_x.include? arr
+          return "And this very move makes X the WINNER!"
+        elsif @memory_of_o.include? arr
+          return "And this very move makes O the WINNER!"
+        end
+    end
 
   end
 
