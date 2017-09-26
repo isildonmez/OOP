@@ -15,7 +15,7 @@ class TicTacToe
 
     # Taking the coordinate of current player
     puts "What is the coordinate of your next move?"
-    @coordinate = gets.chomp.downcase
+    @coordinate = gets.chomp.downcase.to_sym
 
     # Checking the validity
     valid_coordinate(@coordinate)
@@ -31,21 +31,34 @@ class TicTacToe
     a_winner(@player)
   end
 
-  def valid_coordinate(coordinate)
-    # Checks if the coordinate is valid.
-    # ckecks if the coordinate is not occupied.
-    # I am not sure about this until!
-    until coordinate[0].between?("a","c") && coordinate[1].to_i.between?(1,3)
-      puts "Please state a coordinate with a letter and a digit, respectively. (e.g. 'a3' or 'C2' and so on.)"
-      coordinate = gets.chomp.downcase
+  def valid_coordinate?(coordinate)
+    # Checks if the syntax of the coordinate is valid.
+    valid_digits = lambda do |coordinate|
+      unless coordinate[0].between?("a","c") && coordinate[1].to_i.between?(1,3)
+        puts "Please state a coordinate with a letter and a digit, respectively. (e.g. 'a3' or 'C2' and so on.)"
+        return false
+      end
     end
+
+    # Checks if the coordinate is not occupied.
+    free_space = lambda do |coordinate|
+      if (@memory_of_x + @memory_of_y).include? coordinate
+        puts "This coordinate is occupied. Please enter another coordinate."
+        return false
+      end
+    end
+    # I am not sure about this until!
+    until free_space.call(coordinate) && valid_digits.call(coordinate)
+      coordinate = gets.chomp.downcase.to_sym
+    end
+    puts "Came this far"
     @coordinate = coordinate.to_sym
   end
 
   def memory_of_each_player(player)
     #stores each players coordinate as an array of symbols
-    @memory_of_x = []
-    @memory_of_y = []
+    @memory_of_x = [:a3, :b2]
+    @memory_of_y = [:c1]
     player = X ? @memory_of_x << @coordinate : @memory_of_y << @coordinate
   end
 
