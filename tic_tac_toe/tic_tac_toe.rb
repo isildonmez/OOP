@@ -12,15 +12,23 @@ class TicTacToe
 
   def act(player)
     # Stores the steps of each act as a main method.
+
+    # Taking the coordinate of current player
     puts "What is the coordinate of your next move?"
     @coordinate = gets.chomp.downcase
 
+    # Checking the validity
     valid_coordinate(@coordinate)
 
+    # Save into memory array
     @player = player
-    # visualise
+    memory_of_each_player(@player)
+
+    # Visualising
     visualise(@player)
-    #is_a_winner?
+
+    #Checking if there is a winner
+    a_winner(@player)
   end
 
   def valid_coordinate(coordinate)
@@ -35,10 +43,10 @@ class TicTacToe
   end
 
   def memory_of_each_player(player)
+    #stores each players coordinate as an array of symbols
     @memory_of_x = []
     @memory_of_y = []
     player = X ? @memory_of_x << @coordinate : @memory_of_y << @coordinate
-    #stores each players coordinate as an array of symbols
   end
 
   def visualise(player)
@@ -48,7 +56,7 @@ class TicTacToe
     2nd_line = "2---"
     3rd_line = "3---"
 
-    which_line = 0
+    which_line = 0th_line
     [1st_line, 2nd_line, 3rd_line].each do |line|
       if line[0].include? @coordinate.to_s[1]
         which_line = line
@@ -61,7 +69,7 @@ class TicTacToe
     puts 0th_line, 1st_line, 2nd_line, 3rd_line
   end
 
-  def a_winner?
+  def a_winner?(player)
     # Checks memory_of_each_player if it includes any of the below combinations.
     @@winners_array = [
       %i[a3 a2 a1], %i[b3 b2 b1], %i[c3 c2 c1],
