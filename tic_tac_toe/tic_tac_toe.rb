@@ -7,9 +7,6 @@ puts "5. Each player should follow the other"
 
 class TicTacToe
   # Be careful about the class of coordinate
-
-  include Enumerable
-
   def act(player)
     # Stores the steps of each act as a main method.
 
@@ -21,20 +18,21 @@ class TicTacToe
     valid_coordinate(@coordinate)
 
     # Save into memory array
-    @player = player
-    memory_of_each_player(@player)
+    memory_of_each_player(player)
 
     # Visualising
-    puts visualise(@player)
+    puts visualise(player)
 
     #Checking if there is a winner
-    puts a_winner? if a_winner?
+    return a_winner? if a_winner?
   end
 
-  def valid_coordinate?(coordinate)
+  def valid_coordinate(coordinate)
     # Checks if the syntax of the coordinate is valid.
     valid_digits = lambda do |coordinate|
-      unless coordinate[0].between?("a","c") && coordinate[1].to_i.between?(1,3)
+      if coordinate[0].between?("a","c") && coordinate[1].to_i.between?(1,3)
+        return true
+      else
         puts "Please state a coordinate with a letter and a digit, respectively. (e.g. 'a3' or 'C2' and so on.)"
         return false
       end
@@ -45,6 +43,8 @@ class TicTacToe
       if (@memory_of_x + @memory_of_o).include? coordinate
         puts "This coordinate is occupied. Please enter another coordinate."
         return false
+      else
+        return true
       end
     end
 
@@ -96,16 +96,15 @@ class TicTacToe
           return "And this very move makes O the WINNER!"
         end
     end
-
   end
-
 end
 
 X = TicTacToe.new
 O = TicTacToe.new
 
 
-for i in 0...10
+for i in 1...10
   act(X) if i.odd?
-  act(Y) if i.even?
+  act(O) if i.even?
 end
+# p "Unfortunately, there is no winner in this game :("
