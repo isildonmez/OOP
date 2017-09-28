@@ -12,7 +12,7 @@ class TicTacToe
     visualise
   end
 
-  def act
+  def start
     turn = 1
     while turn < 10
       player = turn.odd? ? :x : :o
@@ -62,7 +62,7 @@ end
 
 game = TicTacToe.new
 
-game.act
+game.start
 
 
 
