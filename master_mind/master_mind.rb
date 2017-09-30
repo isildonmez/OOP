@@ -15,7 +15,6 @@ class Mastermind
     @proposition = "Please write 'breaker' if you want to be the code breaker or 'maker' to be the code maker."
     puts @proposition
     @request = gets.chomp.downcase
-    puts @request
 
     which_player
     which_game
@@ -29,46 +28,64 @@ class Mastermind
   end
 
   def which_game
-    @request == "breaker" ? @code_breaker = CodeBreaker.new : @code_maker = CodeMaker.new
-
-    # case @request
-    #   when "breaker"
-    #   	@code_breaker = CodeBreaker.new
-    #   else
-    #   	@code_maker = CodeMaker.new
-    # end
-
-    # if @request == "breaker"
-    #   @code_breaker = CodeBreaker.new
-    # else
-    #   @code_maker = CodeMaker.new
-    # end
+    if @request == "breaker"
+      @code_breaker = CodeBreaker.new
+    else
+      @code_maker = CodeMaker.new
+    end
   end
 end
 
 
 
 class CodeBreaker
-# Compute makes a random code
+# Computer makes a random code
   def initialize()
-    puts "Breaker Babe"
     @board = Board.new
+    @code = Board.get_colours.sample(4)
+    p @code
+    # The followings should be in a loop.
+    # get_the_guess
+    # check_the_guess
   end
+
+  def get_the_guess
+   puts "Please write your 4 letters code as a permutation of colours."
+   puts "As an example, for Blue, Green, Purple and Blue, the entry should be without space and as follows 'BGPB'."
+   @guessed_colours = gets.chomp.upcase.split("")
+  end
+
+  def check_the_guess
+    until (@guessed_colours.uniq - Board.get_colours).empty? && @guessed_colours.size == 4
+      puts "Please read the instuctions and enter a valid code"
+      @guessed_colours = gets.chomp.upcase.split("")
+    end
+  end
+
+
 end
 
 
 
 class CodeMaker
+# LATER
 # Computer need to guess
   def initialize()
-    puts "Maker Yoo"
     @board = Board.new
   end
 end
 
+
+
 class Board
+  @@colours = %w[B Y G P O R]
+
   def initialize()
-   visualise
+    visualise
+  end
+
+  def self.get_colours
+    @@colours
   end
 
   def visualise
