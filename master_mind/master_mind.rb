@@ -86,10 +86,15 @@ class CodeBreaker
     # TODO
     @feedbacks = []
     array_of_common_elements = @code & @guessed_colours
+    updated_guess_array = @guessed_colours
     unless array_of_common_elements.empty?
       @code.zip(@guessed_colours).each do |code, guess|
-        @feedbacks.push(code == guess ? "+" : "-")
+        if code == guess
+          @feedbacks.push("+")
+          updated_guess_array = (@guessed_colours - [code])
+        end
       end
+      (updated_guess_array & @code).size.times {@feedbacks.push("-")}
     end
     @feedbacks
   end
