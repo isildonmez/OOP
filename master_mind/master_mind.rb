@@ -1,5 +1,5 @@
-module Common_Methods
-
+module CommonMethods
+  COLOURS = %w[B Y G P O R]
 end
 
 
@@ -44,11 +44,11 @@ end
 
 
 class CodeBreaker
+  include CommonMethods
 # Computer makes a random code
   def initialize()
     @board = Board.new
-    @code = Board.get_colours.sample(4)
-    p @code
+    @code = COLOURS.sample(4)
     act
   end
 
@@ -57,13 +57,10 @@ class CodeBreaker
     while (number_of_guess < 13) || (@guessed_colours == @code)
       get_the_guess
       check_the_guess
-      compose_a_feedback
-      #visualise the board
+      compose_feedbacks
+      @board.visualise(@guessed_colours, @feedbacks, number_of_guess)
       number_of_guess += 1
     end
-    # The followings should be in a loop.
-    # get_the_guess
-    # check_the_guess
   end
 
   def get_the_guess
@@ -73,14 +70,14 @@ class CodeBreaker
   end
 
   def check_the_guess
-    until (@guessed_colours.uniq - Board.get_colours).empty? && @guessed_colours.size == 4
+    until (@guessed_colours.uniq - COLOURS).empty? && @guessed_colours.size == 4
       puts "Please read the instuctions and enter a valid code"
       @guessed_colours = gets.chomp.upcase.split("")
     end
   end
 
-  def compose_a_feedback
-    puts "Hello from compose_a_feedback"
+  def compose_feedbacks
+    @feedbacks = ["+", "-"]
   end
 
 
@@ -89,6 +86,7 @@ end
 
 
 class CodeMaker
+  include CommonMethods
 # LATER
 # Computer need to guess
   def initialize()
@@ -99,27 +97,31 @@ end
 
 
 class Board
-  @@colours = %w[B Y G P O R]
 
   def initialize()
-    visualise
+    @hash_of_guesses = {}
   end
 
-  def self.get_colours
-    @@colours
+  def store_guesses(guesses, feedbacks)
+    puts "Into the store method"
+    @hash_of_guesses[guesses] = feedbacks
+    @hash_of_guesses.each do |guesses, feedbacks|
+      puts "Into hash methods"
+      print "#{guesses.join(" ")}    "
+      puts "#{feedbacks.join}"
+    end
   end
 
-  def visualise
-    for i in 1..12
+  # BE SURE!
+  def visualise(guesses, feedbacks, line)
+    puts "Into the visualise method"
+    store_guesses(guesses, feedbacks)
+    for i in line..12
       print "_ _ _ _    "
       puts "...."
     end
   end
 
-  def colour_control
-  	# Capital first letter
-  	# Among colours?
-  end
 end
 
 game = Mastermind.new
