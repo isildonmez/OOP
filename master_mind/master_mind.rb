@@ -44,23 +44,27 @@ end
 
 
 class CodeBreaker
-  include CommonMethods
 # Computer makes a random code
+  include CommonMethods
+
   def initialize()
     @board = Board.new
     @code = COLOURS.sample(4)
+    p @code
     act
   end
 
   def act
     number_of_guess = 1
-    while (number_of_guess < 13) || (@guessed_colours == @code)
+    while (number_of_guess < 13) && (@guessed_colours != @code)
       get_the_guess
       check_the_guess
       compose_feedbacks
       @board.visualise(@guessed_colours, @feedbacks, number_of_guess)
       number_of_guess += 1
     end
+    puts "Congratulations!" if @guessed_colours == @code
+    puts "Game over!" if number_of_guess == 13
   end
 
   def get_the_guess
@@ -79,9 +83,19 @@ class CodeBreaker
   end
 
   def compose_feedbacks
-    @feedbacks = ["+", "-"]
+    @feedbacks = []
+    array_of_common_elements = @code & @guessed_colours
+    unless array_of_common_elements.empty?
+      array_of_common_elements.each do |el|
+        if @code.index(el) == @guessed_colours.index(el)
+          @feedbacks << "+"
+        else
+          @feedbacks << "-"
+        end
+      end
+    end
+    @feedbacks
   end
-
 
 end
 
