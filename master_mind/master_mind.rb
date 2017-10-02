@@ -1,3 +1,8 @@
+module Common_Methods
+
+end
+
+
 class Mastermind
   def initialize()
     puts "Instructions:"
@@ -44,6 +49,18 @@ class CodeBreaker
     @board = Board.new
     @code = Board.get_colours.sample(4)
     p @code
+    act
+  end
+
+  def act
+    number_of_guess = 1
+    while (number_of_guess < 13) || (@guessed_colours == @code)
+      get_the_guess
+      check_the_guess
+      compose_a_feedback
+      #visualise the board
+      number_of_guess += 1
+    end
     # The followings should be in a loop.
     # get_the_guess
     # check_the_guess
@@ -60,6 +77,10 @@ class CodeBreaker
       puts "Please read the instuctions and enter a valid code"
       @guessed_colours = gets.chomp.upcase.split("")
     end
+  end
+
+  def compose_a_feedback
+    puts "Hello from compose_a_feedback"
   end
 
 
