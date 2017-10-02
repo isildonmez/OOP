@@ -70,8 +70,10 @@ class CodeBreaker
   end
 
   def check_the_guess
-    until (@guessed_colours.uniq - COLOURS).empty? && @guessed_colours.size == 4
-      puts "Please read the instuctions and enter a valid code"
+    until (@guessed_colours.uniq - COLOURS).empty? &&
+          @guessed_colours.size == 4 &&
+          @board.new_guess?(@guessed_colours)
+      puts "Please read the instuctions and enter a new and valid code"
       @guessed_colours = gets.chomp.upcase.split("")
     end
   end
@@ -102,11 +104,13 @@ class Board
     @hash_of_guesses = {}
   end
 
+  def new_guess?(new_guess)
+    !@hash_of_guesses.keys.include? new_guess
+  end
+
   def store_guesses(guesses, feedbacks)
-    puts "Into the store method"
     @hash_of_guesses[guesses] = feedbacks
     @hash_of_guesses.each do |guesses, feedbacks|
-      puts "Into hash methods"
       print "#{guesses.join(" ")}    "
       puts "#{feedbacks.join}"
     end
@@ -114,9 +118,8 @@ class Board
 
   # BE SURE!
   def visualise(guesses, feedbacks, line)
-    puts "Into the visualise method"
     store_guesses(guesses, feedbacks)
-    for i in line..12
+    for i in line...12
       print "_ _ _ _    "
       puts "...."
     end
