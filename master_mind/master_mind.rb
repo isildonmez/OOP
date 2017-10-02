@@ -83,15 +83,12 @@ class CodeBreaker
   end
 
   def compose_feedbacks
+    # TODO
     @feedbacks = []
     array_of_common_elements = @code & @guessed_colours
     unless array_of_common_elements.empty?
-      array_of_common_elements.each do |el|
-        if @code.index(el) == @guessed_colours.index(el)
-          @feedbacks << "+"
-        else
-          @feedbacks << "-"
-        end
+      @code.zip(@guessed_colours).each do |code, guess|
+        @feedbacks.push(code == guess ? "+" : "-")
       end
     end
     @feedbacks
@@ -107,6 +104,7 @@ class CodeMaker
 # Computer need to guess
   def initialize()
     @board = Board.new
+
   end
 end
 
