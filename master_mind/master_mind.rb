@@ -16,21 +16,6 @@ module CommonMethods
     end
   end
 
-  def compose_feedbacks
-    # TODO: What if code has a letter two times but guess 1 time: @auto_code=ROOG @guess=OYYY
-    @feedbacks = []
-    unless (@auto_code & @user_code).empty?
-      for i in 0..3
-        if @auto_code[i] == @user_code[i]
-          @feedbacks << "+"
-        elsif @user_code.include? @auto_code[i]
-          @feedbacks << "-"
-        end
-      end
-    end
-    @feedbacks
-  end
-
 end
 
 
@@ -98,6 +83,21 @@ class CodeBreaker
     puts "Game over!" if number_of_guess == 13
   end
 
+  def compose_feedbacks
+    # TODO: What if main code has a letter two times but guessed code 1 time: @auto_code=ROOG @guess=OYYY
+    @feedbacks = []
+    unless (@auto_code & @user_code).empty?
+      for i in 0..3
+        if @auto_code[i] == @user_code[i]
+          @feedbacks << "+"
+        elsif @user_code.include? @auto_code[i]
+          @feedbacks << "-"
+        end
+      end
+    end
+    @feedbacks
+  end
+
 end
 
 
@@ -108,7 +108,30 @@ class CodeMaker
 # Computer need to guess
   def initialize()
     @board = Board.new
+    get_the_code_from_user
+    check_the_code
+    act
   end
+
+  def act
+    number_of_guess = 1
+    while (number_of_guess < 13) && (@user_code != @auto_code)
+      create_auto_code
+      compose_feedbacks
+      @board.visualise(@auto_code, @feedbacks, number_of_guess)
+      number_of_guess += 1
+    end
+    puts "That was a nice game! :)"
+  end
+
+  def create_auto_code
+    @auto_code = COLOURS.sample(4)
+  end
+
+  def compose_feedbacks
+    @feedbacks = ["+", "-"]
+  end
+
 end
 
 
@@ -131,7 +154,6 @@ class Board
     end
   end
 
-  # BE SURE!
   def visualise(guesses, feedbacks, line)
     store_guesses(guesses, feedbacks)
     for i in line...12
