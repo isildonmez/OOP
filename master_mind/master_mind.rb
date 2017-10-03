@@ -83,18 +83,16 @@ class CodeBreaker
   end
 
   def compose_feedbacks
-    # TODO
+    # TODO: What if code has a letter two times but guess 1 time: @code=ROOG @guess=OYYY
     @feedbacks = []
-    array_of_common_elements = @code & @guessed_colours
-    updated_guess_array = @guessed_colours
-    unless array_of_common_elements.empty?
-      @code.zip(@guessed_colours).each do |code, guess|
-        if code == guess
-          @feedbacks.push("+")
-          updated_guess_array = (@guessed_colours - [code])
+    unless (@code & @guessed_colours).empty?
+      for i in 0..3
+        if @code[i] == @guessed_colours[i]
+          @feedbacks << "+"
+        elsif @guessed_colours.include? @code[i]
+          @feedbacks << "-"
         end
       end
-      (updated_guess_array & @code).size.times {@feedbacks.push("-")}
     end
     @feedbacks
   end
