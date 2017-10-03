@@ -1,5 +1,36 @@
 module CommonMethods
   COLOURS = %w[B Y G P O R]
+
+  def get_the_code_from_user
+    puts "Please write your 4 letters code as a permutation of colours."
+    puts "As an example, for Blue, Green, Purple and Blue, the entry should be without space and as follows 'BGPB'."
+    @user_code = gets.chomp.upcase.split("")
+  end
+
+  def check_the_code
+    until (@user_code.uniq - COLOURS).empty? &&
+          @user_code.size == 4 &&
+          @board.new_guess?(@user_code)
+      puts "Please read the instuctions and enter a new and valid code"
+      @user_code = gets.chomp.upcase.split("")
+    end
+  end
+
+  def compose_feedbacks
+    # TODO: What if code has a letter two times but guess 1 time: @auto_code=ROOG @guess=OYYY
+    @feedbacks = []
+    unless (@auto_code & @user_code).empty?
+      for i in 0..3
+        if @auto_code[i] == @user_code[i]
+          @feedbacks << "+"
+        elsif @user_code.include? @auto_code[i]
+          @feedbacks << "-"
+        end
+      end
+    end
+    @feedbacks
+  end
+
 end
 
 
@@ -34,7 +65,7 @@ class Mastermind
 
   def which_game
     if @request == "breaker"
-      @code_breaker = CodeBreaker.new
+      @auto_code_breaker = CodeBreaker.new
     else
       @code_maker = CodeMaker.new
     end
@@ -49,52 +80,22 @@ class CodeBreaker
 
   def initialize()
     @board = Board.new
-    @code = COLOURS.sample(4)
-    p @code
+    @auto_code = COLOURS.sample(4)
+    p @auto_code
     act
   end
 
   def act
     number_of_guess = 1
-    while (number_of_guess < 13) && (@guessed_colours != @code)
-      get_the_guess
-      check_the_guess
+    while (number_of_guess < 13) && (@user_code != @auto_code)
+      get_the_code_from_user
+      check_the_code
       compose_feedbacks
-      @board.visualise(@guessed_colours, @feedbacks, number_of_guess)
+      @board.visualise(@user_code, @feedbacks, number_of_guess)
       number_of_guess += 1
     end
-    puts "Congratulations!" if @guessed_colours == @code
+    puts "Congratulations!" if @user_code == @auto_code
     puts "Game over!" if number_of_guess == 13
-  end
-
-  def get_the_guess
-   puts "Please write your 4 letters code as a permutation of colours."
-   puts "As an example, for Blue, Green, Purple and Blue, the entry should be without space and as follows 'BGPB'."
-   @guessed_colours = gets.chomp.upcase.split("")
-  end
-
-  def check_the_guess
-    until (@guessed_colours.uniq - COLOURS).empty? &&
-          @guessed_colours.size == 4 &&
-          @board.new_guess?(@guessed_colours)
-      puts "Please read the instuctions and enter a new and valid code"
-      @guessed_colours = gets.chomp.upcase.split("")
-    end
-  end
-
-  def compose_feedbacks
-    # TODO: What if code has a letter two times but guess 1 time: @code=ROOG @guess=OYYY
-    @feedbacks = []
-    unless (@code & @guessed_colours).empty?
-      for i in 0..3
-        if @code[i] == @guessed_colours[i]
-          @feedbacks << "+"
-        elsif @guessed_colours.include? @code[i]
-          @feedbacks << "-"
-        end
-      end
-    end
-    @feedbacks
   end
 
 end
@@ -107,7 +108,6 @@ class CodeMaker
 # Computer need to guess
   def initialize()
     @board = Board.new
-
   end
 end
 
