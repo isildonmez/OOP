@@ -1,4 +1,4 @@
-module CommonMethods
+module MastermindCommonMethods
   COLOURS = %w[B Y G P O R]
 
   def get_the_code_from_user
@@ -17,7 +17,6 @@ module CommonMethods
   end
 
 end
-
 
 class Mastermind
   def initialize()
@@ -57,11 +56,9 @@ class Mastermind
   end
 end
 
-
-
 class CodeBreaker
 # Computer makes a random code
-  include CommonMethods
+  include MastermindCommonMethods
 
   def initialize()
     @board = Board.new
@@ -83,17 +80,37 @@ class CodeBreaker
     puts "Game over!" if number_of_guess == 13
   end
 
+  def positive_feedbacks
+    zipped_code = @auto_code.zip(@user_code)
+    to_update = []
+    zipped_code.each do |arr|
+      if arr[0] == arr[1]
+        @feedbacks << "+"
+        to_update << arr
+      end
+    end
+    updated_zipped_code = zipped_code - to_update
+    updated_zipped_code.each do |arr|
+      @updated_auto_code << arr[0]
+      @updated_user_code << arr[1]
+    end
+  end
+
+  def negative_feedbacks
+    # TODO
+    unless (@updated_auto_code & @updated_user_code).empty?
+      @feedbacks << "-"
+    end
+  end
+
   def compose_feedbacks
     # TODO: What if main code has a letter two times but guessed code 1 time: @auto_code=ROOG @guess=OYYY
     @feedbacks = []
+    @updated_auto_code = []
+    @updated_user_code = []
     unless (@auto_code & @user_code).empty?
-      for i in 0..3
-        if @auto_code[i] == @user_code[i]
-          @feedbacks << "+"
-        elsif @user_code.include? @auto_code[i]
-          @feedbacks << "-"
-        end
-      end
+      positive_feedbacks
+      negative_feedbacks
     end
     @feedbacks
   end
@@ -101,15 +118,15 @@ class CodeBreaker
 end
 
 
-
 class CodeMaker
-  include CommonMethods
-# LATER
-# Computer need to guess
+  # Computer need to guess
+  include MastermindCommonMethods
+
   def initialize()
     @board = Board.new
     get_the_code_from_user
     check_the_code
+    @hash_of_guesses = {}
     act
   end
 
@@ -125,11 +142,11 @@ class CodeMaker
   end
 
   def create_auto_code
-    @auto_code = COLOURS.sample(4)
+    # TODO
   end
 
   def compose_feedbacks
-    @feedbacks = ["+", "-"]
+    # TODO
   end
 
 end
