@@ -111,7 +111,9 @@ class CodeBreaker
     hash_code = hash_proc.call(@updated_code)
     hash_guess = hash_proc.call(@updated_guess)
 
-    number_of_intersection = (@updated_code & @updated_guess).flat_map {|el| [hash_code[el], hash_guess[el]].min}.reduce(&:+)
+    number_of_intersection = (@updated_code & @updated_guess).flat_map do |el|
+      [hash_code[el], hash_guess[el]].min
+    end.reduce(&:+)
     number_of_intersection.times {@feedbacks << "-"}
 
   end
