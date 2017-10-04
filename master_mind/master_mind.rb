@@ -62,7 +62,10 @@ class CodeBreaker
 
   def initialize()
     @board = Board.new
-    @auto_code = COLOURS.sample(4)
+    @auto_code = []
+    for i in 1..4
+      @auto_code << COLOURS.sample
+    end
     p @auto_code
     act
   end
@@ -104,7 +107,6 @@ class CodeBreaker
   end
 
   def compose_feedbacks
-    # TODO: What if main code has a letter two times but guessed code 1 time: @auto_code=ROOG @guess=OYYY
     @feedbacks = []
     @updated_auto_code = []
     @updated_user_code = []
