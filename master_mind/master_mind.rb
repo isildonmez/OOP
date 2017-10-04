@@ -1,18 +1,18 @@
 module MastermindCommonMethods
   COLOURS = %w[B Y G P O R]
 
-  def get_the_code_from_user
+  def get_the_code
     puts "Please write your 4 letters code as a permutation of colours."
     puts "As an example, for Blue, Green, Purple and Blue, the entry should be without space and as follows 'BGPB'."
-    @user_code = gets.chomp.upcase.split("")
+    @guess = gets.chomp.upcase.split("")
   end
 
   def check_the_code
-    until (@user_code.uniq - COLOURS).empty? &&
-          @user_code.size == 4 &&
-          @board.new_guess?(@user_code)
+    until (@guess.uniq - COLOURS).empty? &&
+          @guess.size == 4 &&
+          @board.new_guess?(@guess)
       puts "Please read the instuctions and enter a new and valid code"
-      @user_code = gets.chomp.upcase.split("")
+      @guess = gets.chomp.upcase.split("")
     end
   end
 
@@ -62,37 +62,36 @@ class CodeBreaker
 
   def initialize()
     @board = Board.new
-    @auto_code = COLOURS.repeated_permutation(4).to_a.sample
-    p @auto_code
+    @code = COLOURS.repeated_permutation(4).to_a.sample
     act
   end
 
   def act
     number_of_guess = 1
-    while (number_of_guess < 13) && (@user_code != @auto_code)
-      get_the_code_from_user
+    while (number_of_guess < 13) && (@guess != @code)
+      get_the_code
       check_the_code
       compose_feedbacks
-      @board.visualise(@user_code, @feedbacks, number_of_guess)
+      @board.visualise(@guess, @feedbacks, number_of_guess)
       number_of_guess += 1
     end
-    puts "Congratulations!" if @user_code == @auto_code
+    puts "Congratulations!" if @guess == @code
     puts "Game over!" if number_of_guess == 13
   end
 
   def positive_feedbacks
-    zipped_code = @auto_code.zip(@user_code)
+    zipped = @code.zip(@guess)
     to_update = []
-    zipped_code.each do |arr|
+    zipped.each do |arr|
       if arr[0] == arr[1]
         @feedbacks << "+"
         to_update << arr
       end
     end
-    updated_zipped_code = zipped_code - to_update
-    updated_zipped_code.each do |arr|
-      @updated_auto_code << arr[0]
-      @updated_user_code << arr[1]
+    updated_zipped = zipped - to_update
+    updated_zipped.each do |arr|
+      @updated_code << arr[0]
+      @updated_guess << arr[1]
     end
   end
 
@@ -109,26 +108,20 @@ class CodeBreaker
       hash
     end
 
-    hash_auto = hash_proc.call(@updated_auto_code)
-    hash_user = hash_proc.call(@updated_user_code)
+    hash_code = hash_proc.call(@updated_code)
+    hash_guess = hash_proc.call(@updated_guess)
 
-    p @updated_auto_code
-    p @updated_user_code
-    p hash_auto
-    p hash_user
+    number_of_intersection = (@updated_code & @updated_guess).flat_map {|el| [hash_code[el], hash_guess[el]].min}.reduce(&:+)
+    number_of_intersection.times {@feedbacks << "-"}
 
-    intersection_array = (@updated_auto_code & @updated_user_code).flat_map {|el| [hash_auto[el], hash_user[el]].min}
-    intersection_array.reduce(&:+).times {@feedbacks << "-"}
-
-    p intersection_array
   end
 
   def compose_feedbacks
     @feedbacks = []
-    @updated_auto_code = []
-    @updated_user_code = []
-    positive_feedbacks unless (@auto_code & @user_code).empty?
-    negative_feedbacks unless (@updated_user_code & @updated_auto_code).empty?
+    @updated_code = []
+    @updated_guess = []
+    positive_feedbacks unless (@code & @guess).empty?
+    negative_feedbacks unless (@updated_guess & @updated_code).empty?
     @feedbacks
   end
 
@@ -138,10 +131,10 @@ end
 class CodeMaker
   # Computer need to guess
   include MastermindCommonMethods
-
+  # TODO: Consider the methods in initialize again.
   def initialize()
     @board = Board.new
-    get_the_code_from_user
+    get_the_code
     check_the_code
     @hash_of_guesses = {}
     act
@@ -149,16 +142,16 @@ class CodeMaker
 
   def act
     number_of_guess = 1
-    while (number_of_guess < 13) && (@user_code != @auto_code)
-      create_auto_code
+    while (number_of_guess < 13) && (@code != @guess)
+      create_guess
       compose_feedbacks
-      @board.visualise(@auto_code, @feedbacks, number_of_guess)
+      @board.visualise(@guess, @feedbacks, number_of_guess)
       number_of_guess += 1
     end
     puts "That was a nice game! :)"
   end
 
-  def create_auto_code
+  def create_guess
     # TODO
   end
 
