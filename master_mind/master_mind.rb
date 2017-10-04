@@ -62,10 +62,7 @@ class CodeBreaker
 
   def initialize()
     @board = Board.new
-    @auto_code = []
-    for i in 1..4
-      @auto_code << COLOURS.sample
-    end
+    @auto_code = COLOURS.repeated_permutation(4).to_a.sample
     p @auto_code
     act
   end
@@ -100,20 +97,38 @@ class CodeBreaker
   end
 
   def negative_feedbacks
-    # TODO
-    unless (@updated_auto_code & @updated_user_code).empty?
-      @feedbacks << "-"
+    hash_proc = Proc.new do |array|
+      hash = {}
+      array.each do |el|
+        if hash.include? el
+          hash[el] += 1
+        else
+          hash[el] = 1
+        end
+      end
+      hash
     end
+
+    hash_auto = hash_proc.call(@updated_auto_code)
+    hash_user = hash_proc.call(@updated_user_code)
+
+    p @updated_auto_code
+    p @updated_user_code
+    p hash_auto
+    p hash_user
+
+    intersection_array = (@updated_auto_code & @updated_user_code).flat_map {|el| [hash_auto[el], hash_user[el]].min}
+    intersection_array.reduce(&:+).times {@feedbacks << "-"}
+
+    p intersection_array
   end
 
   def compose_feedbacks
     @feedbacks = []
     @updated_auto_code = []
     @updated_user_code = []
-    unless (@auto_code & @user_code).empty?
-      positive_feedbacks
-      negative_feedbacks
-    end
+    positive_feedbacks unless (@auto_code & @user_code).empty?
+    negative_feedbacks unless (@updated_user_code & @updated_auto_code).empty?
     @feedbacks
   end
 
