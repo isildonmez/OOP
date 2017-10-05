@@ -17,6 +17,53 @@ module MastermindCommonMethods
     @user_code
   end
 
+  def positive_feedbacks
+    zipped = @code.zip(@guess)
+    to_update = []
+    zipped.each do |arr|
+      if arr[0] == arr[1]
+        @feedbacks << "+"
+        to_update << arr
+      end
+    end
+    updated_zipped = zipped - to_update
+    updated_zipped.each do |arr|
+      @updated_code << arr[0]
+      @updated_guess << arr[1]
+    end
+  end
+
+  def negative_feedbacks
+    hash_proc = Proc.new do |array|
+      hash = {}
+      array.each do |el|
+        if hash.include? el
+          hash[el] += 1
+        else
+          hash[el] = 1
+        end
+      end
+      hash
+    end
+
+    hash_code = hash_proc.call(@updated_code)
+    hash_guess = hash_proc.call(@updated_guess)
+
+    number_of_intersection = (@updated_code & @updated_guess).map do |el|
+      [hash_code[el], hash_guess[el]].min
+    end.reduce(&:+)
+    number_of_intersection.times {@feedbacks << "-"}
+  end
+
+  def compose_feedbacks
+    @feedbacks = []
+    @updated_code = []
+    @updated_guess = []
+    positive_feedbacks unless (@code & @guess).empty?
+    negative_feedbacks unless (@updated_guess & @updated_code).empty?
+    @feedbacks
+  end
+
 end
 
 class Mastermind
@@ -64,6 +111,7 @@ class CodeBreaker
   def initialize()
     @board = Board.new
     @code = COLOURS.repeated_permutation(4).to_a.sample
+    p @code
     act
   end
 
@@ -80,54 +128,6 @@ class CodeBreaker
     puts "Game over!" if number_of_guess == 13
   end
 
-  def positive_feedbacks
-    zipped = @code.zip(@guess)
-    to_update = []
-    zipped.each do |arr|
-      if arr[0] == arr[1]
-        @feedbacks << "+"
-        to_update << arr
-      end
-    end
-    updated_zipped = zipped - to_update
-    updated_zipped.each do |arr|
-      @updated_code << arr[0]
-      @updated_guess << arr[1]
-    end
-  end
-
-  def negative_feedbacks
-    hash_proc = Proc.new do |array|
-      hash = {}
-      array.each do |el|
-        if hash.include? el
-          hash[el] += 1
-        else
-          hash[el] = 1
-        end
-      end
-      hash
-    end
-
-    hash_code = hash_proc.call(@updated_code)
-    hash_guess = hash_proc.call(@updated_guess)
-
-    number_of_intersection = (@updated_code & @updated_guess).map do |el|
-      [hash_code[el], hash_guess[el]].min
-    end.reduce(&:+)
-    number_of_intersection.times {@feedbacks << "-"}
-
-  end
-
-  def compose_feedbacks
-    @feedbacks = []
-    @updated_code = []
-    @updated_guess = []
-    positive_feedbacks unless (@code & @guess).empty?
-    negative_feedbacks unless (@updated_guess & @updated_code).empty?
-    @feedbacks
-  end
-
 end
 
 
@@ -138,7 +138,6 @@ class CodeMaker
     @board = Board.new
     get_the_code
     @code = check_the_code
-    @hash_of_guesses = {}
     act
   end
 
@@ -154,11 +153,7 @@ class CodeMaker
   end
 
   def create_guess
-    # TODO
-  end
-
-  def compose_feedbacks
-    # TODO
+    @guess = COLOURS.repeated_permutation(4).to_a.sample
   end
 
 end
