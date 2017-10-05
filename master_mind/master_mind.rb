@@ -63,7 +63,6 @@ module MastermindCommonMethods
     negative_feedbacks unless (@updated_guess & @updated_code).empty?
     @feedbacks
   end
-
 end
 
 class Mastermind
@@ -127,7 +126,6 @@ class CodeBreaker
     puts "Congratulations!" if @guess == @code
     puts "Game over!" if number_of_guess == 13
   end
-
 end
 
 
@@ -136,25 +134,39 @@ class CodeMaker
   include MastermindCommonMethods
   def initialize()
     @board = Board.new
+    @updated_colours = COLOURS
+    @c_index = 0
     get_the_code
     @code = check_the_code
     act
   end
 
   def act
-    number_of_guess = 1
-    while (number_of_guess < 13) && (@code != @guess)
+    @number_of_guess = 1
+    while (@number_of_guess < 13) && (@code != @guess)
       create_guess
       compose_feedbacks
-      @board.visualise(@guess, @feedbacks, number_of_guess)
-      number_of_guess += 1
+      @board.visualise(@guess, @feedbacks, @number_of_guess)
+      @number_of_guess += 1
     end
     puts "That was a nice game! :)"
   end
 
   def create_guess
-    @guess = COLOURS.repeated_permutation(4).to_a.sample
+    if @number_of_guess == 1
+      @guess = (@updated_colours[@c_index] * 4).split("")
+    else
+      case @feedbacks.length
+      when 0
+        p @c_index
+        @updated_colours.delete_at(@c_index)
+        @guess = (@updated_colours[@c_index] * 4).split("")
+      when 1
+      end
+    end
+
   end
+
 
 end
 
