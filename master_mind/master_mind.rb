@@ -136,6 +136,9 @@ class CodeMaker
     @board = Board.new
     @updated_colours = COLOURS
     @c_index = 0
+    @new_colour_index = [2, 3]
+    @order_hash = {}
+
     get_the_code
     @code = check_the_code
     act
@@ -158,13 +161,34 @@ class CodeMaker
     else
       case @feedbacks.length
       when 0
-        p @c_index
         @updated_colours.delete_at(@c_index)
         @guess = (@updated_colours[@c_index] * 4).split("")
       when 1
-      end
-    end
+        if @feedbacks == ["-"]
+          @guess = @guess[2, 2] + @guess[0, 2]
+          @new_colour_index = [0, 1]
 
+          old_colour_index = [0, 1, 2, 3] - @new_colour_index
+          @order_hash[@updated_colours[@c_index]] = old_colour_index
+          @updated_colours.delete_at(@c_index)
+        end
+        @guess = @guess.map.with_index do |c, i|
+          if @new_colour_index.include?(i)
+            c = @updated_colours[@c_index + 1]
+          else
+            c
+          end
+        end
+
+        p @order_hash
+      end
+      # when 2
+      # end
+      # when 3
+      # end
+      # when 4
+      # end
+    end
   end
 
 
