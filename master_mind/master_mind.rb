@@ -4,16 +4,17 @@ module MastermindCommonMethods
   def get_the_code
     puts "Please write your 4 letters code as a permutation of colours."
     puts "As an example, for Blue, Green, Purple and Blue, the entry should be without space and as follows 'BGPB'."
-    @guess = gets.chomp.upcase.split("")
+    @user_code = gets.chomp.upcase.split("")
   end
 
   def check_the_code
-    until (@guess.uniq - COLOURS).empty? &&
-          @guess.size == 4 &&
-          @board.new_guess?(@guess)
+    until (@user_code.uniq - COLOURS).empty? &&
+          @user_code.size == 4 &&
+          @board.new_guess?(@user_code)
       puts "Please read the instuctions and enter a new and valid code"
-      @guess = gets.chomp.upcase.split("")
+      @user_code = gets.chomp.upcase.split("")
     end
+    @user_code
   end
 
 end
@@ -70,7 +71,7 @@ class CodeBreaker
     number_of_guess = 1
     while (number_of_guess < 13) && (@guess != @code)
       get_the_code
-      check_the_code
+      @guess = check_the_code
       compose_feedbacks
       @board.visualise(@guess, @feedbacks, number_of_guess)
       number_of_guess += 1
@@ -111,7 +112,7 @@ class CodeBreaker
     hash_code = hash_proc.call(@updated_code)
     hash_guess = hash_proc.call(@updated_guess)
 
-    number_of_intersection = (@updated_code & @updated_guess).flat_map do |el|
+    number_of_intersection = (@updated_code & @updated_guess).map do |el|
       [hash_code[el], hash_guess[el]].min
     end.reduce(&:+)
     number_of_intersection.times {@feedbacks << "-"}
@@ -133,11 +134,10 @@ end
 class CodeMaker
   # Computer need to guess
   include MastermindCommonMethods
-  # TODO: Consider the methods in initialize again.
   def initialize()
     @board = Board.new
     get_the_code
-    check_the_code
+    @code = check_the_code
     @hash_of_guesses = {}
     act
   end
