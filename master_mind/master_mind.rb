@@ -56,7 +56,6 @@ module MastermindCommonMethods
   end
 
   def compose_feedbacks
-    @feedbacks = []
     @updated_code = []
     @updated_guess = []
     positive_feedbacks unless (@code & @guess).empty?
@@ -96,9 +95,9 @@ class Mastermind
 
   def which_game
     if @request == "breaker"
-      @auto_code_breaker = CodeBreaker.new
+      CodeBreaker.new.act
     else
-      @code_maker = CodeMaker.new
+      CodeMaker.new.act
     end
   end
 end
@@ -111,7 +110,7 @@ class CodeBreaker
     @board = Board.new
     @code = COLOURS.repeated_permutation(4).to_a.sample
     p @code
-    act
+    @feedbacks = []
   end
 
   def act
@@ -136,53 +135,70 @@ class CodeMaker
     @board = Board.new
     @updated_colours = COLOURS
     @c_index = 0
-    @new_colour_index = [2, 3]
-    @order_hash = {}
-
-    get_the_code
-    @code = check_the_code
-    act
+    @feedbacks = []
+    # @new_colour_index = [2, 3]
+    # @order_hash = {}
   end
 
   def act
+    get_the_code
+    @code = check_the_code
+    # TODO: while
     @number_of_guess = 1
     while (@number_of_guess < 13) && (@code != @guess)
       create_guess
-      compose_feedbacks
-      @board.visualise(@guess, @feedbacks, @number_of_guess)
+      # @board.visualise(@guess, @feedbacks, @number_of_guess)
       @number_of_guess += 1
     end
     puts "That was a nice game! :)"
   end
 
+  # TODO
   def create_guess
-    if @number_of_guess == 1
-      @guess = (@updated_colours[@c_index] * 4).split("")
-    else
-      case @feedbacks.length
-      when 0
-        @updated_colours.delete_at(@c_index)
-        @guess = (@updated_colours[@c_index] * 4).split("")
-      when 1
-        if @feedbacks == ["-"]
-          @guess = @guess[2, 2] + @guess[0, 2]
-          @new_colour_index = [0, 1]
+    # get_4_the_same = Proc.new {(@updated_colours[@c_index] * 4).split("")}
+    # if @number_of_guess == 1
+    #   @guess = get_4_the_same
+    #   compose_feedbacks
+    # else
+    #   while @feedbacks.empty?
+    #     @updated_colours.delete_at(@c_index)
+    #     @guess = get_4_the_same
+    #     compose_feedbacks
+    #   end
 
-          old_colour_index = [0, 1, 2, 3] - @new_colour_index
-          @order_hash[@updated_colours[@c_index]] = old_colour_index
-          @updated_colours.delete_at(@c_index)
-        end
-        @guess = @guess.map.with_index do |c, i|
-          if @new_colour_index.include?(i)
-            c = @updated_colours[@c_index + 1]
-          else
-            c
-          end
-        end
+    # end
 
-        p @order_hash
-      end
+    # if @number_of_guess == 1
+    #   @guess = (@updated_colours[@c_index] * 4).split("")
+    # else
+      # case @feedbacks.length
+      # when 0
+      #   @updated_colours.delete_at(@c_index)
+      #   @guess = (@updated_colours[@c_index] * 4).split("")
+      # when 1
+      #   if @feedbacks == ["-"]
+      #     @guess = @guess[2, 2] + @guess[0, 2]
+      #     @new_colour_index = [0, 1]
+
+      #     old_colour_index = [0, 1, 2, 3] - @new_colour_index
+      #     @order_hash[@updated_colours[@c_index]] = old_colour_index
+      #     @updated_colours.delete_at(@c_index)
+      #   end
+      #   @guess = @guess.map.with_index do |c, i|
+      #     if @new_colour_index.include?(i)
+      #       c = @updated_colours[@c_index + 1]
+      #     else
+      #       c
+      #     end
+      #   end
+
+      #   p @order_hash
+      # end
       # when 2
+      #   if @feedbacks.include?("+") && @feedbacks.include?("-")
+      #     @new_colour_index = [1,3]
+      #     ...
+      #   end
       # end
       # when 3
       # end
