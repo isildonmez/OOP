@@ -142,6 +142,7 @@ class CodeMaker
     @updated_colours = COLOURS
     @c_index = 0
     @feedbacks = []
+    @each_feedback = []
     # @new_colour_index = [2, 3]
     # @order_hash = {}
   end
@@ -153,7 +154,8 @@ class CodeMaker
     @number_of_guess = 1
     while (@number_of_guess < 13) && (@code != @guess)
       create_guess
-      # @board.visualise(@guess, @feedbacks, @number_of_guess)
+      compose_feedbacks
+      @board.visualise(@guess, @each_feedback, @number_of_guess)
       @number_of_guess += 1
     end
     puts "That was a nice game! :)"
@@ -161,45 +163,44 @@ class CodeMaker
 
   # TODO
   def create_guess
-    # get_4_the_same = Proc.new {(@updated_colours[@c_index] * 4).split("")}
-    # if @number_of_guess == 1
-    #   @guess = get_4_the_same
-    #   compose_feedbacks
-    # else
-    #   while @feedbacks.empty?
-    #     @updated_colours.delete_at(@c_index)
-    #     @guess = get_4_the_same
-    #     compose_feedbacks
-    #   end
+    get_4_the_same = Proc.new {(@updated_colours[@c_index] * 4).split("")}
+    if @number_of_guess == 1
+      @guess = get_4_the_same.call
+    end
+    else
+      if @each_feedback.empty?
+        @updated_colours.delete_at(@c_index)
+        @guess = get_4_the_same.call
+      end
 
-    # end
+    end
 
     # if @number_of_guess == 1
     #   @guess = (@updated_colours[@c_index] * 4).split("")
     # else
-      # case @feedbacks.length
-      # when 0
-      #   @updated_colours.delete_at(@c_index)
-      #   @guess = (@updated_colours[@c_index] * 4).split("")
-      # when 1
-      #   if @feedbacks == ["-"]
-      #     @guess = @guess[2, 2] + @guess[0, 2]
-      #     @new_colour_index = [0, 1]
+    #   case @feedbacks.length
+    #   when 0
+    #     @updated_colours.delete_at(@c_index)
+    #     @guess = (@updated_colours[@c_index] * 4).split("")
+    #   when 1
+    #     if @feedbacks == ["-"]
+    #       @guess = @guess[2, 2] + @guess[0, 2]
+    #       @new_colour_index = [0, 1]
 
-      #     old_colour_index = [0, 1, 2, 3] - @new_colour_index
-      #     @order_hash[@updated_colours[@c_index]] = old_colour_index
-      #     @updated_colours.delete_at(@c_index)
-      #   end
-      #   @guess = @guess.map.with_index do |c, i|
-      #     if @new_colour_index.include?(i)
-      #       c = @updated_colours[@c_index + 1]
-      #     else
-      #       c
-      #     end
-      #   end
+    #       old_colour_index = [0, 1, 2, 3] - @new_colour_index
+    #       @order_hash[@updated_colours[@c_index]] = old_colour_index
+    #       @updated_colours.delete_at(@c_index)
+    #     end
+    #     @guess = @guess.map.with_index do |c, i|
+    #       if @new_colour_index.include?(i)
+    #         c = @updated_colours[@c_index + 1]
+    #       else
+    #         c
+    #       end
+    #     end
 
-      #   p @order_hash
-      # end
+    #     p @order_hash
+    #   end
       # when 2
       #   if @feedbacks.include?("+") && @feedbacks.include?("-")
       #     @new_colour_index = [1,3]
@@ -211,7 +212,7 @@ class CodeMaker
       # when 4
       # end
     # end
-  end
+  # end
 
 
 end
