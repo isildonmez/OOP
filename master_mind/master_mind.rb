@@ -22,7 +22,7 @@ module MastermindCommonMethods
     to_update = []
     zipped.each do |arr|
       if arr[0] == arr[1]
-        @feedbacks << "+"
+        @each_feedback << "+"
         to_update << arr
       end
     end
@@ -52,16 +52,18 @@ module MastermindCommonMethods
     number_of_intersection = (@updated_code & @updated_guess).map do |el|
       [hash_code[el], hash_guess[el]].min
     end.reduce(&:+)
-    number_of_intersection.times {@feedbacks << "-"}
+    number_of_intersection.times {@each_feedback << "-"}
   end
 
   # TODO
   def compose_feedbacks
+    @each_feedback = []
     @updated_code = []
     @updated_guess = []
     positive_feedbacks unless (@code & @guess).empty?
     negative_feedbacks unless (@updated_guess & @updated_code).empty?
-    @feedbacks
+    @feedbacks << @each_feedback
+    @each_feedback
   end
 end
 
@@ -123,7 +125,7 @@ class CodeBreaker
       get_the_code
       @guess = check_the_code
       compose_feedbacks
-      @board.visualise(@guess, @feedbacks, number_of_guess)
+      @board.visualise(@guess, @each_feedback, number_of_guess)
       number_of_guess += 1
     end
     puts "Congratulations!" if @guess == @code
@@ -208,14 +210,14 @@ class CodeMaker
       # end
       # when 4
       # end
-    end
+    # end
   end
 
 
 end
 
 
-
+# TODO
 class Board
 
   def initialize()
@@ -226,16 +228,17 @@ class Board
     !@hash_of_guesses.keys.include? new_guess
   end
 
-  def store_guesses(guesses, feedbacks)
-    @hash_of_guesses[guesses] = feedbacks
-    @hash_of_guesses.each do |guesses, feedbacks|
+  def store_guesses(guesses, each_feedback)
+    @hash_of_guesses[guesses] = each_feedback
+    @hash_of_guesses.each do |guesses, each_feedback|
       print "#{guesses.join(" ")}    "
-      puts "#{feedbacks.join}"
+      puts "#{each_feedback.join}"
     end
   end
 
-  def visualise(guesses, feedbacks, line)
-    store_guesses(guesses, feedbacks)
+  # TODO
+  def visualise(guesses, each_feedback, line)
+    store_guesses(guesses, each_feedback)
     for i in line...12
       print "_ _ _ _    "
       puts "...."
