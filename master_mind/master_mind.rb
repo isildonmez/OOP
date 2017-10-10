@@ -55,7 +55,6 @@ module MastermindCommonMethods
     number_of_intersection.times {@each_feedback << "-"}
   end
 
-  # TODO
   def compose_feedbacks
     @each_feedback = []
     @updated_code = []
@@ -143,14 +142,13 @@ class CodeMaker
     @c_index = 0
     @feedbacks = []
     @each_feedback = []
-    # @new_colour_index = [2, 3]
-    # @order_hash = {}
+    @new_colour_index = [2, 3]
+    @possible_index = 0
   end
 
   def act
     get_the_code
     @code = check_the_code
-    # TODO: while
     @number_of_guess = 1
     while (@number_of_guess < 13) && (@code != @guess)
       create_guess
@@ -164,57 +162,58 @@ class CodeMaker
   # TODO
   def create_guess
     get_4_the_same = Proc.new {(@updated_colours[@c_index] * 4).split("")}
-    if @number_of_guess == 1
-      @guess = get_4_the_same.call
-    end
-    else
-      if @each_feedback.empty?
-        @updated_colours.delete_at(@c_index)
+    case @each_feedback.length
+      when 0
+        @updated_colours.delete_at(@c_index) unless @number_of_guess == 1
         @guess = get_4_the_same.call
-      end
+      when 1
+        if @each_feedback == ["-"]
+          @guess = @guess[2, 2] + @guess[0, 2]
+          @new_colour_index = [0, 1]
+        end
+        @updated_colours.delete_at(@c_index + 1) if @guess.uniq.length != 1
+        @guess = @guess.map.with_index do |colour, index|
+          if @new_colour_index.include?(index)
+            colour = @updated_colours[@c_index + 1]
+          else
+            colour = @updated_colours[@c_index]
+          end
+        end
+      when 2
+        if @each_feedback == %w[- -] && @possible_index == 0
+          @guess = @guess[2, 2] + @guess[0, 2]
+          @new_colour_index = [0, 1]
+        elsif @each_feedback == %w[+ +]
+          old_colour_index = [0,1,2,3] - @new_colour_index
+          zipped_possible_places = old_colour_index.zip(@new_colour_index)
+          zipped_index = zipped_possible_places[0]
+          @new_colour_index = zipped_possible_places[1]
+          @guess = @guess.map.with_index do |colour, index|
+            if @new_colour_index.include?(index)
+              colour = @updated_colours[@c_index + 2]
+            else
+              colour
+            end
+          end
+        else
+          possible_places_for_last_colour = [[0,2], [0,3], [1,2], [1,3]]
+          @new_colour_index = possible_places_for_last_colour[@possible_index]
+          @guess = @guess.map.with_index do |colour, index|
+            if @new_colour_index.include?(index)
+              colour = @updated_colours[@c_index + 1]
+            else
+              colour = @updated_colours[@c_index]
+            end
+          end
+          @possible_index += 1
+        end
+        @guess
+      when 3
+
 
     end
 
-    # if @number_of_guess == 1
-    #   @guess = (@updated_colours[@c_index] * 4).split("")
-    # else
-    #   case @feedbacks.length
-    #   when 0
-    #     @updated_colours.delete_at(@c_index)
-    #     @guess = (@updated_colours[@c_index] * 4).split("")
-    #   when 1
-    #     if @feedbacks == ["-"]
-    #       @guess = @guess[2, 2] + @guess[0, 2]
-    #       @new_colour_index = [0, 1]
-
-    #       old_colour_index = [0, 1, 2, 3] - @new_colour_index
-    #       @order_hash[@updated_colours[@c_index]] = old_colour_index
-    #       @updated_colours.delete_at(@c_index)
-    #     end
-    #     @guess = @guess.map.with_index do |c, i|
-    #       if @new_colour_index.include?(i)
-    #         c = @updated_colours[@c_index + 1]
-    #       else
-    #         c
-    #       end
-    #     end
-
-    #     p @order_hash
-    #   end
-      # when 2
-      #   if @feedbacks.include?("+") && @feedbacks.include?("-")
-      #     @new_colour_index = [1,3]
-      #     ...
-      #   end
-      # end
-      # when 3
-      # end
-      # when 4
-      # end
-    # end
-  # end
-
-
+  end
 end
 
 
