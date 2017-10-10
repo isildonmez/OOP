@@ -55,6 +55,7 @@ module MastermindCommonMethods
     number_of_intersection.times {@feedbacks << "-"}
   end
 
+  # TODO
   def compose_feedbacks
     @updated_code = []
     @updated_guess = []
@@ -66,6 +67,16 @@ end
 
 class Mastermind
   def initialize()
+    rules
+    @proposition = "Please write 'breaker' if you want to be the code breaker or 'maker' to be the code maker."
+    puts @proposition
+    @request = gets.chomp.downcase
+
+    which_player
+    which_game
+  end
+
+  def rules
     puts "Instructions:"
     puts "0. It is a game for two players."
     puts "1. One player, the code breaker, tries to guess the code their opponent, the code maker, comes up with."
@@ -77,13 +88,6 @@ class Mastermind
     puts "7. The order of the '+'s and '-'s  does not matter."
     puts "8. Code breaker have 12 turns to guess the code."
     puts "Let us begin!"
-
-    @proposition = "Please write 'breaker' if you want to be the code breaker or 'maker' to be the code maker."
-    puts @proposition
-    @request = gets.chomp.downcase
-
-    which_player
-    which_game
   end
 
   def which_player
