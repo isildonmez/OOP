@@ -18,50 +18,54 @@ module MastermindCommonMethods
   end
 
   def positive_feedbacks
-    zipped = @code.zip(@guess)
-    to_update = []
-    zipped.each do |arr|
-      if arr[0] == arr[1]
-        @each_feedback << "+"
-        to_update << arr
-      end
-    end
-    updated_zipped = zipped - to_update
-    updated_zipped.each do |arr|
-      @updated_code << arr[0]
-      @updated_guess << arr[1]
-    end
-  end
-
-  def negative_feedbacks
-    hash_proc = Proc.new do |array|
-      hash = {}
-      array.each do |el|
-        if hash.include? el
-          hash[el] += 1
-        else
-          hash[el] = 1
+    updated_code = []
+    updated_guess = []
+    unless (@code & @guess).empty?
+      zipped = @code.zip(@guess)
+      to_update = []
+      zipped.each do |arr|
+        if arr[0] == arr[1]
+          @each_feedback << "+"
+          to_update << arr
         end
       end
-      hash
+      updated_zipped = zipped - to_update
+      updated_zipped.each do |arr|
+        updated_code << arr[0]
+        updated_guess << arr[1]
+      end
     end
+    return updated_code, updated_guess
+  end
 
-    hash_code = hash_proc.call(@updated_code)
-    hash_guess = hash_proc.call(@updated_guess)
+  def negative_feedbacks(updated_code, updated_guess)
+    unless (updated_guess & updated_code).empty?
+      hash_proc = Proc.new do |array|
+        hash = {}
+        array.each do |el|
+          if hash.include? el
+            hash[el] += 1
+          else
+            hash[el] = 1
+          end
+        end
+        hash
+      end
 
-    number_of_intersection = (@updated_code & @updated_guess).map do |el|
-      [hash_code[el], hash_guess[el]].min
-    end.reduce(&:+)
-    number_of_intersection.times {@each_feedback << "-"}
+      hash_code = hash_proc.call(updated_code)
+      hash_guess = hash_proc.call(updated_guess)
+
+      number_of_intersection = (updated_code & updated_guess).map do |el|
+        [hash_code[el], hash_guess[el]].min
+      end.reduce(&:+)
+      number_of_intersection.times {@each_feedback << "-"}
+    end
   end
 
   def compose_feedbacks
     @each_feedback = []
-    @updated_code = []
-    @updated_guess = []
-    positive_feedbacks unless (@code & @guess).empty?
-    negative_feedbacks unless (@updated_guess & @updated_code).empty?
-    @feedbacks << @each_feedback
+    updated_code, updated_guess = positive_feedbacks
+    negative_feedbacks(updated_code, updated_guess)
     @each_feedback
   end
 end
@@ -69,11 +73,6 @@ end
 class Mastermind
   def initialize()
     rules
-    @proposition = "Please write 'breaker' if you want to be the code breaker or 'maker' to be the code maker."
-    puts @proposition
-    @request = gets.chomp.downcase
-
-    which_player
     which_game
   end
 
@@ -92,14 +91,18 @@ class Mastermind
   end
 
   def which_player
-    until @request == "breaker" || @request == "maker"
-      puts @proposition
-      @request = gets.chomp.downcase
+    proposition = "Please write 'breaker' if you want to be the code breaker or 'maker' to be the code maker."
+    puts proposition
+    request = gets.chomp.downcase
+    until request == "breaker" || request == "maker"
+      puts proposition
+      request = gets.chomp.downcase
     end
+    request
   end
 
   def which_game
-    if @request == "breaker"
+    if which_player == "breaker"
       CodeBreaker.new.act
     else
       CodeMaker.new.act
@@ -114,8 +117,6 @@ class CodeBreaker
   def initialize()
     @board = Board.new
     @code = COLOURS.repeated_permutation(4).to_a.sample
-    p @code
-    @feedbacks = []
   end
 
   def act
@@ -140,10 +141,9 @@ class CodeMaker
     @board = Board.new
     @updated_colours = COLOURS
     @c_index = 0
-    @feedbacks = []
-    @each_feedback = []
     @new_colour_index = [2, 3]
     @possible_index = 0
+    @each_feedback = []
   end
 
   def act
@@ -209,6 +209,7 @@ class CodeMaker
         end
         @guess
       when 3
+      when 4
 
 
     end
@@ -217,10 +218,9 @@ class CodeMaker
 end
 
 
-# TODO
 class Board
 
-  def initialize()
+  def initialize
     @hash_of_guesses = {}
   end
 
