@@ -1,14 +1,13 @@
 class TicTacToe
+  attr_accessor :board
 
   def initialize()
     puts "Rules:"
     puts "This is a game for two players, X and O, who take turns stating the coordinates in a 3×3 grid."
     puts "To state a coordinate, players should enter a number between 1..9 and not occupied number which can be seen as '.' "
 
-    @board = {}
-    (1..9).each do |num|
-      @board[num] = "."
-    end
+    @board = Hash[(1..9).map { |x| [x, '.'] }]
+
     visualise
   end
 
@@ -40,10 +39,14 @@ class TicTacToe
   end
 
   def visualise
-    @board.each do |k,v|
-      print "#{v} "
-      puts "" if k % 3 == 0
-    end
+    joined = @board.map do |pos, sym|
+      if pos % 3 == 0
+        sym.to_s + "\n"
+      else
+        sym.to_s
+      end
+    end.join(" ")
+    " " + joined
   end
 
   def a_winner?(index_sym)
@@ -62,7 +65,7 @@ class TicTacToe
 end
 
 if __FILE__ == $0
-  game = TicTacToe.new
+  game = TicTacToe.new()
   game.start
 end
 
