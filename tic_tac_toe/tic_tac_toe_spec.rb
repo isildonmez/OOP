@@ -3,7 +3,15 @@ require_relative 'tic_tac_toe'
 describe TicTacToe do
 
   subject(:game) {TicTacToe.new}
-  it { is_expected.to respond_to(:visualise) }
+  let(:empty_board) { {1 => '.', 2 => '.', 3 => '.',
+                      4 => '.', 5 => '.', 6 => '.',
+                      7 => '.', 8 => '.', 9 => '.',} }
+
+  describe "#initialize" do
+    it "sets board" do
+      expect(game.board).to eq(empty_board)
+    end
+  end
 
   describe "#a_winner?" do
     context "checking if there is an intersection of players and winning movements arrays." do

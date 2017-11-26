@@ -8,7 +8,7 @@ class TicTacToe
 
     @board = Hash[(1..9).map { |x| [x, '.'] }]
 
-    visualise
+    puts visualise
   end
 
   def start
@@ -16,7 +16,7 @@ class TicTacToe
     while turn < 10
       player = turn.odd? ? :x : :o
       valid_coordinate(player.to_s)
-      visualise
+      puts visualise
       if a_winner?(player)
         p "#{player.to_s}, the winner!"
         return
