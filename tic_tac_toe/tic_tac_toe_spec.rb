@@ -39,5 +39,19 @@ describe TicTacToe do
     end
   end
 
+  # TODO: Fix/ define to_i method for :coord
+  describe `#valid_coordinate` do
+    before do
+      fake_obj = double
+      expect(game).to receive(:gets).and_return(fake_obj)
+      expect(fake_obj).to receive(:chomp).and_return(:coord)
+    end
+
+    it "sets the coordinate to do board as a player" do
+      game.valid_coordinate("x")
+      expect(game.board(:coord)).to eq("x")
+    end
+  end
+
 end
 
