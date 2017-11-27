@@ -15,30 +15,29 @@ describe TicTacToe do
 
   describe "#visualise" do
     it 'returns string representation of board' do
-      game.board[1] = :x
+      game.board[1] = "x"
       str = " x . .\n . . .\n . . .\n"
       expect(game.visualise).to eq(str)
     end
   end
 
-  # describe "#a_winner?" do
-  #   context "checking if there is an intersection of players and winning movements arrays." do
-  #     it "returns true" do
-  #       game.board[1], game.board[2], game.board[3] = :x, :x, :x
-  #       expect(game.a_winner?(:x)).to eql(true)
-  #       game.board[1], game.board[5], game.board[9] = :o, :o, :o
-  #       expect(game.a_winner?(:o)).to eql(true)
-  #     end
-
-  #     it "returns false" do
-  #       game.board[3], game.board[4], game.board[5] = :x, :x, :x
-  #       expect(game.a_winner?(:x)).to eql(false)
-  #       game.board[1], game.board[3], game.board[5] = :o, :o, :o
-  #       expect(game.a_winner?(:o)).to eql(false)
-  #     end
-  #   end
-  # end
-
+  describe '#a_winner?' do
+    context "checking if there is an intersection of players and winning movements arrays." do
+      it 'returns false' do
+        game.board[1] = "x"
+        game.board[2] = "x"
+        expect(game.a_winner?("x")).to eq(false)
+        game.board[3] = "x"
+        expect(game.a_winner?("o")).to eq(false)
+      end
+      it 'returns true' do
+        game.board[1] = "x"
+        game.board[2] = "x"
+        game.board[3] = "x"
+        expect(game.a_winner?("x")).to eq(true)
+      end
+    end
+  end
 
 end
 

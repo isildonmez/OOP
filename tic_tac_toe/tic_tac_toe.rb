@@ -14,7 +14,7 @@ class TicTacToe
   def start
     turn = 1
     while turn < 10
-      player = turn.odd? ? :x : :o
+      player = turn.odd? ? "x" : "o"
       valid_coordinate(player.to_s)
       puts visualise
       if a_winner?(player)
@@ -40,23 +40,19 @@ class TicTacToe
 
   def visualise
     joined = @board.map do |pos, sym|
-      if pos % 3 == 0
-        sym.to_s + "\n"
-      else
-        sym.to_s
-      end
+      pos % 3 == 0 ? sym + "\n" : sym
     end.join(" ")
     " " + joined
   end
 
-  def a_winner?(index_sym)
+  def a_winner?(player)
     winners_array = [
      [1,2,3],[4,5,6],[7,8,9],
      [1,4,7],[2,5,8],[3,6,9],
      [1,5,9],[3,5,7]
     ]
 
-    memory_array = @board.select{|k, v| v == index_sym.to_s}.keys
+    memory_array = @board.select{ |k, v| v == player }.keys
     winners_array.each do |arr|
       return true if (arr - memory_array).empty?
     end
