@@ -39,17 +39,18 @@ describe TicTacToe do
     end
   end
 
-  # TODO: Fix/ define to_i method for :coord
   describe `#valid_coordinate` do
+    # For further info please visit this stack answer:
+    # https://stackoverflow.com/questions/29323771/rspec-test-for-a-method-that-contains-gets-chomp
     before do
       fake_obj = double
       expect(game).to receive(:gets).and_return(fake_obj)
-      expect(fake_obj).to receive(:chomp).and_return(:coord)
+      expect(fake_obj).to receive(:chomp).and_return("3")
     end
 
     it "sets the coordinate to do board as a player" do
       game.valid_coordinate("x")
-      expect(game.board(:coord)).to eq("x")
+      expect(game.board[3]).to eq("x")
     end
   end
 
